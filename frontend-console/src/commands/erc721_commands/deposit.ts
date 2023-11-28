@@ -23,9 +23,8 @@ import {
 } from "../../rollups";
 import { findInputAddedInfo } from "../util";
 
-
 interface Args extends ConnectArgs, RollupsArgs {
-    erc721?: string;
+    token: string;
     to: string;
     tokenId: string;
 }
@@ -35,14 +34,13 @@ const safeTransferFrom = "safeTransferFrom(address,address,uint256)";
 export const command = "deposit";
 export const describe = "Deposit ERC-721 tokens to a DApp";
 
-
-
 export const builder = (yargs: Argv<Args>) => {
     const connectArgs = connectBuilder(yargs, true);
     const rollupsArgs = rollupsBuilder(connectArgs);
 
     return rollupsArgs
-        .option("erc721", {
+        .option("token", {
+            demandOption: true,
             describe: "ERC-721 contract address",
             type: "string",
         })
@@ -54,7 +52,7 @@ export const builder = (yargs: Argv<Args>) => {
 };
 
 export const handler = async (args: Args) => {
-    const { rpc, mnemonic, accountIndex, erc721, tokenId } = args;
+    const { rpc, mnemonic, accountIndex, token, tokenId } = args;
 
     // connect to provider
     console.log(`connecting to ${rpc}`);
@@ -64,7 +62,7 @@ export const handler = async (args: Args) => {
     console.log(`connected to chain ${network.chainId}`);
 
     // connect to rollups
-    const {dapp, inputContract, erc721Portal, deployment } = await rollups(
+    const { dapp, inputContract, erc721Portal, deployment } = await rollups(
         network.chainId,
         signer || provider,
         args
@@ -73,7 +71,8 @@ export const handler = async (args: Args) => {
     console.log(`depositing token ${tokenId}...`);
 
     // get ERC-721 contract address
-    const erc721address = erc721 ?? deployment?.contracts["SimpleERC721"]?.address;
+    const erc721address =
+        token ?? deployment?.contracts["SimpleERC721"]?.address;
     if (!erc721address) {
         throw new Error(
             `cannot resolve ERC-721 address for chain ${network.chainId}`
@@ -90,7 +89,7 @@ export const handler = async (args: Args) => {
     console.log(`using account "${senderAddress}"`);
 
     //Set the ERC721Portal as the new controller
-    const approve = await erc721Contract.approve(erc721Portal.address,tokenId)
+    const approve = await erc721Contract.approve(erc721Portal.address, tokenId);
 
     await approve.wait();
 
@@ -101,8 +100,7 @@ export const handler = async (args: Args) => {
         tokenId,
         "0x",
         "0x"
-    )
-
+    );
 
     console.log(`transaction: ${tx.hash}`);
     console.log("waiting for confirmation...");

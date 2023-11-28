@@ -1,8 +1,11 @@
 {
-    "name": "frontend-console",
+    "name": "cartesi-curl",
     "version": "0.16.0",
     "description": "Simple console front-end for Cartesi DApp",
     "author": "Danilo Tuler <danilo.tuler@cartesi.io>",
+    "contributors": [
+        "Gabriel Barros <gabriel@1596.io>"
+    ],
     "license": "Apache-2.0",
     "scripts": {
         "build": "run-s codegen tsc",
@@ -14,10 +17,13 @@
         "tsc": "tsc",
         "test": "mocha -r ts-node/register ./tests/*test.ts"
     },
-    "main": "./dist/index.js",
+    "main": "./dist/src/index.js",
     "bin": {
-        "dapp": "./dist/index.js"
+        "cartesi-curl": "./dist/src/index.js"
     },
+    "files": [
+        "/dist"
+    ],
     "devDependencies": {
         "@graphql-codegen/cli": "2.12.0",
         "@graphql-codegen/typed-document-node": "^2.3.3",

@@ -25,13 +25,12 @@ import {
 import { findInputAddedInfo } from "../util";
 
 interface Args extends ConnectArgs, RollupsArgs {
-    erc20?: string;
+    token: string;
     amount: string;
 }
 
 export const command = "deposit";
 export const describe = "Deposit ERC-20 tokens in DApp";
-
 
 export const builder = (yargs: Argv<Args>) => {
     // args regarding connecting to provider
@@ -42,7 +41,8 @@ export const builder = (yargs: Argv<Args>) => {
 
     // this command args
     return rollupsArgs
-        .option("erc20", {
+        .option("token", {
+            demandOption: true,
             describe: "ERC-20 address",
             type: "string",
         })
@@ -54,7 +54,7 @@ export const builder = (yargs: Argv<Args>) => {
 };
 
 export const handler = async (args: Args) => {
-    const { rpc, mnemonic, accountIndex, erc20, amount } = args;
+    const { rpc, mnemonic, accountIndex, token, amount } = args;
 
     // connect to provider
     console.log(`connecting to ${rpc}`);
@@ -71,7 +71,7 @@ export const handler = async (args: Args) => {
     );
 
     // connect to provider, use deployment address based on returned chain id of provider
-    const erc20Address = erc20 ?? deployment?.contracts["SimpleERC20"]?.address;
+    const erc20Address = token ?? deployment?.contracts["SimpleERC20"]?.address;
     if (!erc20Address) {
         throw new Error(
             `cannot resolve ERC-20 address for chain ${network.chainId}`

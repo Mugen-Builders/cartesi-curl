@@ -25,16 +25,13 @@ import {
 import { Argv } from "yargs";
 import { networks } from "./networks";
 import { Deployment, Contract } from "./abi";
-import {
-    readAddressFromFile,
-    readAllContractsFromDir
-} from "./utils"
+import { readAddressFromFile, readAllContractsFromDir } from "./utils";
 
 export interface Args {
-    dapp: string;
     address?: string;
     addressFile?: string;
     deploymentFile?: string;
+    deploymentFolder?: string;
 }
 
 interface Contracts {
@@ -43,8 +40,7 @@ interface Contracts {
     outputContract: ICartesiDApp;
     erc20Portal: IERC20Portal;
     erc721Portal: IERC721Portal;
-    deployment: Deployment
-
+    deployment: Deployment;
 }
 
 /**
@@ -53,43 +49,51 @@ interface Contracts {
  * @returns Argv instance with all options
  */
 export const builder = <T>(yargs: Argv<T>): Argv<Args & T> => {
-    return yargs
-        .option("dapp", {
-            describe: "DApp name",
-            type: "string",
-            default: "dapp",
-        })
-        .option("address", {
-            describe: "Rollups contract address",
-            type: "string",
-        })
-        .option("addressFile", {
-            describe: "File with rollups contract address",
-            type: "string",
-        })
-        .option("deploymentFile", {
-            describe: "JSON file with deployment of rollups contracts",
-            type: "string",
-        });
+    return (
+        yargs
+            // .option("dapp", {
+            //     describe: "DApp name",
+            //     type: "string",
+            //     default: "dapp",
+            // })
+            .option("address", {
+                describe: "Rollups contract address",
+                type: "string",
+            })
+            .option("addressFile", {
+                describe: "File with rollups contract address",
+                type: "string",
+            })
+            .option("deploymentFile", {
+                describe: "JSON file with deployment of rollups contracts",
+                type: "string",
+            })
+            .option("deploymentFolder", {
+                describe: "JSON file with deployment of rollups contracts",
+                type: "string",
+            })
+    );
 };
 
-
-/**
- * Read address from file located at deployment path
- * @param dapp DApp name
- * @param chainId number of chain id of connected network
- * @returns address or undefined if can't resolve network name of file does not exist
- */
-const readDApp = (
-    dapp: string | undefined,
-    chainId: number
-): string | undefined => {
-    const network = networks[chainId];
-    if (network && dapp) {
-        return readAddressFromFile(`../deployments/${network.name}/${dapp}.json`);
-    }
-};
-
+// @ NOTE this might not be useful anymore
+// /**
+//  * Read address from file located at deployment path
+//  * @param dapp DApp name
+//  * @param chainId number of chain id of connected network
+//  * @returns address or undefined if can't resolve network name of file does not exist
+//  */
+// const readDApp = (
+//     dapp: string | undefined,
+//     chainId: number
+// ): string | undefined => {
+//     const network = networks[chainId];
+//     if (network && dapp) {
+//         // @TODO dapp.json for the address
+//         return readAddressFromFile(
+//             `../deployments/${network.name}/${dapp}.json`
+//         );
+//     }
+// };
 
 const readDeployment = (chainId: number, args: Args): Deployment => {
     if (args.deploymentFile) {
@@ -100,25 +104,45 @@ const readDeployment = (chainId: number, args: Args): Deployment => {
             );
         }
         return deployment as Deployment;
+    } else if (args.deploymentFolder) {
+        const contracts: Record<string, Contract> = readAllContractsFromDir(
+            args.deploymentFolder
+            // ,"../common-contracts/deployments/localhost"
+        );
+        //TODO Relative path
+
+        const deployment = {
+            chainId: chainId.toString(),
+            name: "localhost",
+            contracts: contracts,
+        };
+        return deployment as Deployment;
     } else {
+        // @dev old behavior from rollups examples
         const network = networks[chainId];
         if (!network) {
             throw new Error(`unsupported chain ${chainId}`);
         }
 
         if (network.name === "localhost") {
+            const contracts: Record<string, Contract> = readAllContractsFromDir(
+                "../deployments/localhost",
+                "../common-contracts/deployments/localhost"
+            );
+            //TODO Relative path -- Might not be useful anymore
 
-            const contracts: Record<string, Contract> =
-                readAllContractsFromDir("../deployments/localhost",
-                    "../common-contracts/deployments/localhost");
-
-            const deployment = { chainId: chainId.toString(), name: "localhost", contracts: contracts };
+            const deployment = {
+                chainId: chainId.toString(),
+                name: "localhost",
+                contracts: contracts,
+            };
             return deployment as Deployment;
         }
 
         const deployment = require(`@cartesi/rollups/export/abi/${network.name}.json`);
         if (!deployment) {
             throw new Error(`rollups not deployed to network ${network.name}`);
+            // TODO missing deployment for network
         }
         return deployment as Deployment;
     }
@@ -136,10 +160,8 @@ export const rollups = async (
     provider: Provider | Signer,
     args: Args
 ): Promise<Contracts> => {
-    const address =
-        args.address ||
-        readAddressFromFile(args.addressFile) ||
-        readDApp(args.dapp, chainId);
+    const address = args.address || readAddressFromFile(args.addressFile);
+    //  || readDApp(args.dapp, chainId);
 
     if (!address) {
         throw new Error("unable to resolve DApp address");
@@ -165,13 +187,12 @@ export const rollups = async (
         provider
     );
 
-
     return {
         dapp: address,
         inputContract,
         outputContract,
         erc20Portal,
         erc721Portal,
-        deployment
+        deployment,
     };
 };
