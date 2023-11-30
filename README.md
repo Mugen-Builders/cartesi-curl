@@ -7,8 +7,8 @@ It's implemented in Typescript and uses the [ethers](https://docs.ethers.io/v5/)
 
 ## Requirements
 
-- node.js
-- yarn
+-   node.js
+-   yarn
 
 ## Building
 
@@ -80,12 +80,12 @@ When sending data to a DApp, the console application needs to communicate with t
 
 The following parameters are available to specify this configuration, with some default behaviors and values to make it convenient to the user, especially for a local development environment:
 
-- **`--rpc`**: provides the RPC URL of the remote blockchain gateway; if absent, its default value is "http://localhost:8545", which provides connectivity to the Hardhat node used for local development; it may also be specified by setting a value for the environment variable `RPC_URL`;
-- **`--address`**: represents an explicit definition for the address of the DApp's Rollups smart contract, given as a hex string; if absent, the console application will look for other ways to determine this address, as explained below
-- **`--addressFile`**: provides a path to a file containing the address as a hex string, and is only used if `address` is absent
-- **`--dapp`**: specifies the name of the DApp, with a default value of "dapp"; if both `address` and `addressFile` are absent, the console application will query the given RPC instance to infer the network being used, and will extract the DApp's address from file `../deployments/<network>/<dapp>.json`; as such, if none of the above parameters are specified, the DApp address will be determined by looking for the file `../deployments/localhost/dapp.json`;
-- **`--mnemonic`**: determines an account for submitting transactions; when using the `localhost` network, the application will use the default `mnemonic` for the local Hardhat node, which is already funded; otherwise, you must define a mnemonic for an account that has funds in the specified network; you can also define this parameter by setting the `MNEMONIC` environment variable;
-- **`--accountIndex`**: specifies an account index to use from the provided mnemonic; if absent, index `0` is used;
+-   **`--rpc`**: provides the RPC URL of the remote blockchain gateway; if absent, its default value is "http://localhost:8545", which provides connectivity to the Hardhat node used for local development; it may also be specified by setting a value for the environment variable `RPC_URL`;
+-   **`--address`**: represents an explicit definition for the address of the DApp's Rollups smart contract, given as a hex string; if absent, the console application will look for other ways to determine this address, as explained below
+-   **`--addressFile`**: provides a path to a file containing the address as a hex string, and is only used if `address` is absent
+-   **`--dapp`**: specifies the name of the DApp, with a default value of "dapp"; if both `address` and `addressFile` are absent, the console application will query the given RPC instance to infer the network being used, and will extract the DApp's address from file `../deployments/<network>/<dapp>.json`; as such, if none of the above parameters are specified, the DApp address will be determined by looking for the file `../deployments/localhost/dapp.json`;
+-   **`--mnemonic`**: determines an account for submitting transactions; when using the `localhost` network, the application will use the default `mnemonic` for the local Hardhat node, which is already funded; otherwise, you must define a mnemonic for an account that has funds in the specified network; you can also define this parameter by setting the `MNEMONIC` environment variable;
+-   **`--accountIndex`**: specifies an account index to use from the provided mnemonic; if absent, index `0` is used;
 
 ### Listing notices, vouchers and reports
 
@@ -300,3 +300,7 @@ Options are:
 ```
 
 If the `erc721` address is left unspecified, the address for the SimpleERC721 contract will be used for the target blockchain being specified.
+
+## List of Env Vars
+
+GRAPHQL_API=http://localhost:4000/graphql

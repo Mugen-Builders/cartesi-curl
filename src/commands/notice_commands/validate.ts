@@ -22,10 +22,8 @@ import {
     Args as RollupsArgs,
     builder as rollupsBuilder,
 } from "../../rollups";
-import {
-    OutputValidityProofStruct,
-    ProofStruct,
-} from "@cartesi/rollups/dist/src/types/contracts/dapp/CartesiDApp";
+
+import { GRAPHQL_API } from "../../defaults";
 
 interface Args extends ConnectArgs, RollupsArgs {
     url: string;
@@ -35,8 +33,6 @@ interface Args extends ConnectArgs, RollupsArgs {
 
 export const command = "validate";
 export const describe = "Validate notice given its id";
-
-const DEFAULT_URL = "http://localhost:4000/graphql";
 
 export const builder = (yargs: Argv) => {
     // args regarding connecting to provider
@@ -50,7 +46,7 @@ export const builder = (yargs: Argv) => {
         .option("url", {
             describe: "Reader URL",
             type: "string",
-            default: DEFAULT_URL,
+            default: GRAPHQL_API,
         })
         .option("index", {
             describe: "Notice index within its associated Input",

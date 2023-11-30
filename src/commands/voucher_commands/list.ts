@@ -12,6 +12,7 @@
 import { Argv } from "yargs";
 import { getVouchers } from "../../graphql/vouchers";
 import { hex2str } from "../utils";
+import { GRAPHQL_API } from "../../defaults";
 
 interface Args {
     url: string;
@@ -21,14 +22,12 @@ interface Args {
 export const command = "list";
 export const describe = "List vouchers of an input";
 
-const DEFAULT_URL = "http://localhost:4000/graphql";
-
 export const builder = (yargs: Argv) => {
     return yargs
         .option("url", {
             describe: "Reader URL",
             type: "string",
-            default: DEFAULT_URL,
+            default: GRAPHQL_API,
         })
         .option("input", {
             describe: "Input index",

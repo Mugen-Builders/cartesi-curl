@@ -22,6 +22,7 @@ import {
     Args as RollupsArgs,
     builder as rollupsBuilder,
 } from "../../rollups";
+import { GRAPHQL_API } from "../../defaults";
 
 interface Args extends ConnectArgs, RollupsArgs {
     url: string;
@@ -31,8 +32,6 @@ interface Args extends ConnectArgs, RollupsArgs {
 
 export const command = "execute";
 export const describe = "Execute voucher given its input index and its index";
-
-const DEFAULT_URL = "http://localhost:4000/graphql";
 
 export const builder = (yargs: Argv) => {
     // args regarding connecting to provider
@@ -46,7 +45,7 @@ export const builder = (yargs: Argv) => {
         .option("url", {
             describe: "Reader URL",
             type: "string",
-            default: DEFAULT_URL,
+            default: GRAPHQL_API,
         })
         .option("index", {
             describe: "Voucher index within its associated Input",
