@@ -12,6 +12,7 @@
 import { JsonRpcProvider, Provider } from "@ethersproject/providers";
 import { ethers, Signer } from "ethers";
 import { Argv } from "yargs";
+import { MNEMONIC, RPC_URL } from "./defaults";
 
 export interface Args {
     rpc: string;
@@ -19,10 +20,6 @@ export interface Args {
     accountIndex: number;
 }
 
-const HARDHAT_DEFAULT_MNEMONIC =
-    "test test test test test test test test test test test junk";
-
-const HARDHAT_DEFAULT_RPC_URL = "http://localhost:8545";
 
 /**
  * Validator for mnemonic value
@@ -52,12 +49,12 @@ export const builder = <T>(
         .option("rpc", {
             describe: "JSON-RPC provider URL",
             type: "string",
-            default: process.env.RPC_URL || HARDHAT_DEFAULT_RPC_URL,
+            default: RPC_URL,
         })
         .option("mnemonic", {
             describe: "Wallet mnemonic",
             type: "string",
-            default: process.env.MNEMONIC || HARDHAT_DEFAULT_MNEMONIC,
+            default: MNEMONIC,
             demandOption: transactional, // required if need to send transactions
         })
         .option("accountIndex", {

@@ -13,6 +13,7 @@ import fetch from "cross-fetch";
 import path from "path";
 import { Argv } from "yargs";
 import { hex2str } from "./utils";
+import { INSPECT_API } from "../defaults";
 
 interface Args {
     payload: string;
@@ -22,15 +23,12 @@ interface Args {
 export const command = "inspect";
 export const describe = "Inspect the state of the DApp";
 
-const DEFAULT_URL = "http://localhost:5005/inspect";
-// TODO Sunodo defaults
-
 export const builder = (yargs: Argv) => {
     return yargs
         .option("url", {
             describe: "Reader inspect URL",
             type: "string",
-            default: DEFAULT_URL,
+            default: INSPECT_API,
         })
         .option("payload", {
             describe: "Inspect payload to send",
